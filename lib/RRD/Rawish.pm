@@ -210,13 +210,13 @@ RRD::Rawish - A RRDtool wrapper with rawish interface
         rrdfile => 'rrdtest.rrd',           # option
         remote  => 'rrdtest.com:11111',  # option for rrdcached
     );
-    $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
+    my $exit_status = $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
         '--start'        => '1350294000',
         '--step'         => '20',
         '--no-overwrite' => '1',
     });
 
-    $rrd->update([
+    my $exit_status = $rrd->update([
         "1350294020:0:0",
         "1350294040:50:100",
         "1350294060:80:150",
@@ -226,15 +226,15 @@ RRD::Rawish - A RRDtool wrapper with rawish interface
         "1350294140:270:400"
     ]);
 
-    $rrd->graph([
+    my $img = $rrd->graph([
         "DEF:rx=rrdtest2.rrd:rx:LAST",
         "DEF:tx=rrdtest2.rrd:tx:LAST",
         "LINE1:rx:rx#00F000",
         "LINE1:tx#0000F0",
     ]);
 
-    $rrd->info();
-    # =>
+    # error message
+    $rrd->errstr; # => "ERROR: hogehoge"
 
 =head1 DESCRIPTION
 
@@ -296,6 +296,7 @@ Returns xml data
 rrdtool info
 Returns info as a HASH refarence
 
+Examples:
     is $value->{filename}, "rrd_test.rrd";
     is $value->{rrd_version}, "0003";
     is $value->{step}, 20;
@@ -327,22 +328,6 @@ Returns info as a HASH refarence
     is $value->{rra}->[0]->{cdp_prep}->[1]->{unknown_datapoints}, 0;
 
 =back
-
-=head1 AUTHOR
-
-Yuuki Tsubouchi  C<< <yuuki@cpan.org> >>
-
-=head1 THANKS TO
-
-Hatena
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2013, Yuuki Tsubouchi C<< <yuuki@cpan.org> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
 
 =head1 AUTHOR
 
