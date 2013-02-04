@@ -4,6 +4,7 @@ use warnings;
 use 5.008;
 
 use Carp ();
+use Capture::Tiny qw(capture);
 use File::Which ();
 
 our $VERSION = '0.01';
@@ -24,7 +25,7 @@ sub new {
     }, $class;
 }
 
-sub error { $_[0]->{rrderror} }
+sub errstr { $_[0]->{rrderror} }
 
 sub create {
     my ($self, $params, $opts) = @_;
@@ -156,19 +157,23 @@ sub info {
 sub _system {
     my ($self, @expr) = @_;
 
-    my $exit_status = system(join(" ", @expr));
+    my ($stdout, $stderr, $exit_status) = capture {
+        system(join(" ", @expr));
+    };
+    chomp $stderr;
+    $self->{rrderror} = $stderr if $exit_status != 0;
     return $exit_status;
 }
 
 sub _readpipe {
     my ($self, @expr) = @_;
 
-    my $output = readpipe(join(" ", @expr));
-    my $exit_status = $? >> 8;
-    if ($exit_status != 0) {
-        $self->{rrderror} = $output;
-    }
-    return ($output, $exit_status);
+    my ($stdout, $stderr, $exit_status) = capture {
+        system(join(" ", @expr));
+    };
+    chomp $stderr;
+    $self->{rrderror} = $stderr if $exit_status != 0;
+    return ($stdout, $exit_status);
 }
 
 sub _opt_array {
@@ -195,7 +200,7 @@ RRD::Rawish - A RRDtool wrapper with rawish interface
 
     my $rrd = RRD::Rawish->new(
         rrdfile => 'rrdtest.rrd',           # option
-        remote  => 'rrdtest.com:42217',  # option for rrdcached
+        remote  => 'rrdtest.com:11111',  # option for rrdcached
     );
     $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
         '--start'        => '1350294000',

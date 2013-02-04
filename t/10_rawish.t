@@ -1,7 +1,7 @@
 use utf8;
 use strict;
 use warnings;
-use lib lib => 't/lib' => glob 'modules/*/lib';
+use lib lib => 't/lib';
 
 use Test::More;
 use Test::Mock::ExternalCommand;
@@ -13,7 +13,7 @@ use RRD::Rawish::Test qw(rrd_create rrd_setup);
 
 my $rrdtool_path = '/usr/local/bin/rrdtool';
 my $rrd_file     = './rrd_test.rrd';
-my $remote_host  = 'hogerrd.com:42217';
+my $remote_host  = 'hogerrd.com:111111';
 
 subtest constructor => sub {
     {
