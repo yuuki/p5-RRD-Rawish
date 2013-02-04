@@ -15,7 +15,9 @@ sub new {
 
     my $rrdtool_path = $args{rrdtool_path} || File::Which::which('rrdtool')
         or Carp::croak 'Not found rrdtool command';
-    Carp::croak "Cannot execute $rrdtool_path" unless -x $rrdtool_path;
+    if (not -x $rrdtool_path) {
+        Carp::croak "Cannot execute $rrdtool_path";
+    }
 
     return bless {
         command  => $rrdtool_path,
@@ -29,9 +31,9 @@ sub errstr { $_[0]->{rrderror} }
 
 sub create {
     my ($self, $params, $opts) = @_;
-    Carp::croak 'Required rrdfile' unless defined $self->{rrdfile};
-    Carp::croak 'Not ARRAY reference: $params' if ref($params) ne 'ARRAY';
-    Carp::croak 'Not HASH reference: $opts'    if defined $opts && ref($opts) ne 'HASH';
+    Carp::croak 'Require rrdfile'             if not defined $self->{rrdfile};
+    Carp::croak 'Not ARRAY reference: params' if ref($params) ne 'ARRAY';
+    Carp::croak 'Not HASH reference: opts'    if defined $opts && ref($opts) ne 'HASH';
 
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
 
@@ -41,9 +43,9 @@ sub create {
 
 sub update {
     my ($self, $params, $opts) = @_;
-    Carp::croak 'Required rrdfile' unless defined $self->{rrdfile};
-    Carp::croak 'Not ARRAY reference: $params' if ref($params) ne 'ARRAY';
-    Carp::croak 'Not HASH reference: $opts'  if defined $opts && ref($opts) ne 'HASH';
+    Carp::croak 'Require rrdfile'             if not defined $self->{rrdfile};
+    Carp::croak 'Not ARRAY reference: params' if ref($params) ne 'ARRAY';
+    Carp::croak 'Not HASH reference: opts'    if defined $opts && ref($opts) ne 'HASH';
 
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
 
@@ -64,8 +66,8 @@ sub graph {
 
 sub dump {
     my ($self, $opts) = @_;
-    Carp::croak 'Required rrdfile'           unless defined $self->{rrdfile};
-    Carp::croak 'Not HASH reference: $opts'  if defined $opts && ref($opts) ne 'HASH';
+    Carp::croak 'Require rrdfile'           if not defined $self->{rrdfile};
+    Carp::croak 'Not HASH reference: $opts' if defined $opts && ref($opts) ne 'HASH';
 
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
 
@@ -75,9 +77,9 @@ sub dump {
 
 sub restore {
     my ($self, $xmlfile, $opts) = @_;
-    Carp::croak 'Required rrdfile'   unless defined $self->{rrdfile};
-    Carp::croak 'Required $xmlfile '  unless defined $xmlfile;
-    Carp::croak 'Not HASH reference: $opts' if defined $opts && ref($opts) ne 'HASH';
+    Carp::croak 'Require rrdfile'          if not defined $self->{rrdfile};
+    Carp::croak 'Require xmlfile'          if not defined $xmlfile;
+    Carp::croak 'Not HASH reference: opts' if defined $opts && ref($opts) ne 'HASH';
 
     my $ret = $self->_system($self->{command}, 'restore', $xmlfile, $self->{rrdfile}, _opt_array($opts));
     return $ret;
@@ -85,7 +87,7 @@ sub restore {
 
 sub lastupdate {
     my ($self) = @_;
-    Carp::croak 'Required rrdfile' unless defined $self->{rrdfile};
+    Carp::croak 'Require rrdfile'    if not defined $self->{rrdfile};
 
     my $opts = {};
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
@@ -100,9 +102,9 @@ sub lastupdate {
 
 sub fetch {
     my ($self, $CF, $opts) = @_;
-    Carp::croak 'Required rrdfile'   unless defined $self->{rrdfile};
-    Carp::croak 'Required $CF'       unless defined $CF;
-    Carp::croak 'Not HASH reference: $opts' if defined $opts && ref($opts) ne 'HASH';
+    Carp::croak 'Require rrdfile'          if not defined $self->{rrdfile};
+    Carp::croak 'Require CF'               if not defined $CF;
+    Carp::croak 'Not HASH reference: opts' if defined $opts && ref($opts) ne 'HASH';
 
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
 
@@ -115,8 +117,8 @@ sub fetch {
 
 sub xport {
     my ($self, $params, $opts) = @_;
-    Carp::croak 'Not ARRAY reference: $params' if ref($params) ne 'ARRAY';
-    Carp::croak 'Not HASH reference: $opts'    if defined $opts && ref($opts) ne 'HASH';
+    Carp::croak 'Not ARRAY reference: params' if ref($params) ne 'ARRAY';
+    Carp::croak 'Not HASH reference: opts'    if defined $opts && ref($opts) ne 'HASH';
 
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
 
@@ -126,7 +128,7 @@ sub xport {
 
 sub info {
     my ($self) = @_;
-    Carp::croak 'Required rrdfile' unless defined $self->{rrdfile};
+    Carp::croak 'Require rrdfile'    if not defined $self->{rrdfile};
 
     my $opts_str = $self->{remote} ? "--daemon" : "";
 

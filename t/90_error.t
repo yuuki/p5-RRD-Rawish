@@ -18,7 +18,7 @@ subtest no_rrdfile => sub {
         });
     my $params = ['テスト'];
     for (qw(create update dump restore lastupdate fetch info)) {
-        like exception { $rrd->$_($params) }, qr(Required rrdfile);
+        like exception { $rrd->$_($params) }, qr(Require rrdfile);
     }
 };
 
@@ -40,7 +40,7 @@ subtest parameter_type_mismatch => sub {
             like exception { $rrd->$_($params, $opts) }, qr(Not HASH);
         }
         for (qw(fetch restore)) {
-            like exception { $rrd->$_() }, qr(Required);
+            like exception { $rrd->$_() }, qr(Require);
 
             my $param = "スカラー";
             $opts = 'Hashじゃない';
