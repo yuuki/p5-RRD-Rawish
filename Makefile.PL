@@ -7,8 +7,8 @@ name 'RRD::Rawish';
 author 'Yuuki Tsubouchi <yuuki@cpan.org>';
 all_from 'lib/RRD/Rawish.pm';
 
-requires 'File::Which', 1.09;
 requires 'Capture::Tiny';
+requires 'File::Which', 1.09;
 
 tests 't/*.t';
 test_requires 'Test::More';

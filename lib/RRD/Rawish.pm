@@ -158,7 +158,7 @@ sub _system {
     my ($self, @expr) = @_;
 
     my ($stdout, $stderr, $exit_status) = capture {
-        system(join(" ", @expr));
+        system(_sanitize(join(" ", @expr)));
     };
     chomp $stderr;
     $self->{rrderror} = $stderr if $exit_status != 0;
@@ -169,11 +169,17 @@ sub _readpipe {
     my ($self, @expr) = @_;
 
     my ($stdout, $stderr, $exit_status) = capture {
-        system(join(" ", @expr));
+        system(_sanitize(join(" ", @expr)));
     };
     chomp $stderr;
     $self->{rrderror} = $stderr if $exit_status != 0;
     return ($stdout, $exit_status);
+}
+
+sub _sanitize {
+    my $command = shift;
+    $command =~ s/[^a-z0-9#_\s\-\.\,\:\/=\+\-\*\%]//gi;
+    return $command;
 }
 
 sub _opt_array {

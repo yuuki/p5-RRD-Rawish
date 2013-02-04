@@ -57,14 +57,14 @@ subtest rrdtool_syntax_error => sub {
 
     for (qw(create update graph xport)) {
         $rrd->$_([], {'--invalid' => 'aaa' });
-        like $rrd->errstr, qr/ERROR/;
+        like $rrd->errstr, qr/^ERROR:/;
     }
     for (qw(fetch restore)) {
         $rrd->$_("", {'--invalid' => 'aaa' });
-        like $rrd->errstr, qr/ERROR/;
+        like $rrd->errstr, qr/^ERROR:/;
     }
     $rrd->dump({}, {'--invalid' => 'aaa' });
-    like $rrd->errstr, qr/ERROR/;
+    like $rrd->errstr, qr/^ERROR:/;
 };
 
 done_testing;
