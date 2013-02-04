@@ -1,7 +1,7 @@
 use utf8;
 use strict;
 use warnings;
-use lib lib => 't/lib' => glob 'modules/*/lib';
+use lib lib => 't/lib';
 
 use Test::More;
 use Test::Fatal;
@@ -47,6 +47,24 @@ subtest parameter_type_mismatch => sub {
             like exception { $rrd->$_($param, $opts) }, qr(Not HASH);
         }
     }
+};
+
+subtest rrdtool_syntax_error => sub {
+    my $rrd = RRD::Rawish->new(
+        command => $rrdtool_path,
+        rrdfile => $rrd_file,
+    );
+
+    for (qw(create update graph xport)) {
+        $rrd->$_([], {'--invalid' => 'aaa' });
+        like $rrd->errstr, qr/ERROR/;
+    }
+    for (qw(fetch restore)) {
+        $rrd->$_("", {'--invalid' => 'aaa' });
+        like $rrd->errstr, qr/ERROR/;
+    }
+    $rrd->dump({}, {'--invalid' => 'aaa' });
+    like $rrd->errstr, qr/ERROR/;
 };
 
 done_testing;
