@@ -180,7 +180,7 @@ sub _readpipe {
 
 sub _sanitize {
     my $command = shift;
-    $command =~ s/[^a-z0-9#_\s\-\.\,\:\/=\+\-\*\%]//gi;
+    $command =~ s/[^a-z0-9#_@\s\-\.\,\:\/=\+\-\*\%]//gi;
     return $command;
 }
 
