@@ -3,7 +3,7 @@ use warnings;
 
 use inc::Module::Install;
 
-name 'RRD::Rawish';
+name 'RRD-Rawish';
 author 'Yuuki Tsubouchi <yuuki@cpan.org>';
 all_from 'lib/RRD/Rawish.pm';
 
@@ -15,6 +15,5 @@ test_requires 'Test::More';
 test_requires 'Test::Fatal';
 test_requires 'Test::Mock::ExternalCommand';
 
-auto_set_repository;
 auto_include;
 WriteAll;
