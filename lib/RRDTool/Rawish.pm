@@ -7,7 +7,7 @@ use Carp ();
 use Capture::Tiny qw(capture);
 use File::Which ();
 
-our $VERSION = '0.02';
+our $VERSION = '0.021';
 
 sub new {
     my ($class, @args) = @_;
@@ -200,7 +200,7 @@ __END__
 
 =head1 NAME
 
-RRDTool::Rawish - A RRDtool wrapper with rawish interface
+RRDTool::Rawish - A RRDtool command wrapper with rawish interface
 
 =head1 SYNOPSIS
 
@@ -238,15 +238,17 @@ RRDTool::Rawish - A RRDtool wrapper with rawish interface
 
 =head1 DESCRIPTION
 
-RRDTool::Rawish is a RRDtool wrapper class with rawish interface.
+RRDTool::Rawish is a RRDtool command wrapper class with rawish interface.
 You can use the class like RRDtool command interface.
-And RRDTool::Rawish has less dependencies and it is easy to install it.
+Almost all of modules with RRD prefix are RRDs module wrappers.
+It's troublesome to use RRDs with variable environments because it's a XS module and moreover not a CPAN module.
+In contrast, RRDTool::Rawish has less dependencies and it's easy to install it.
 
 =head1 METHODS
 
 =over 4
 
-=item my $rrd = RRDTool::Rawish->new([%args|\%args])
+=item my $rrd = RRDTool::Rawish->new([%args])
 
 Creates a new instance of RRDTool::Rawish.
 
@@ -297,6 +299,7 @@ rrdtool info
 Returns info as a HASH refarence
 
 Examples:
+
     is $value->{filename}, "rrd_test.rrd";
     is $value->{rrd_version}, "0003";
     is $value->{step}, 20;
