@@ -335,7 +335,10 @@ Yuuki Tsubouchi  C<< <yuuki@cpan.org> >>
 
 =head1 THANKS TO
 
-Hatena
+Shoichi Masuhara
+
+=head1 SEE ALSO
+L<RRDtool Documetation|http://oss.oetiker.ch/rrdtool/>
 
 =head1 LICENCE AND COPYRIGHT
 
