@@ -1,4 +1,4 @@
-package RRD::Rawish;
+package RRDTool::Rawish;
 use strict;
 use warnings;
 use 5.008;
@@ -200,13 +200,13 @@ __END__
 
 =head1 NAME
 
-RRD::Rawish - A RRDtool wrapper with rawish interface
+RRDTool::Rawish - A RRDtool wrapper with rawish interface
 
 =head1 SYNOPSIS
 
-    use RRD::Rawish;
+    use RRDTool::Rawish;
 
-    my $rrd = RRD::Rawish->new(
+    my $rrd = RRDTool::Rawish->new(
         rrdfile => 'rrdtest.rrd',           # option
         remote  => 'rrdtest.com:11111',  # option for rrdcached
     );
@@ -238,17 +238,17 @@ RRD::Rawish - A RRDtool wrapper with rawish interface
 
 =head1 DESCRIPTION
 
-RRD::Rawish is a RRDtool wrapper class with rawish interface.
+RRDTool::Rawish is a RRDtool wrapper class with rawish interface.
 You can use the class like RRDtool command interface.
-And RRD::Rawish has less dependencies and it is easy to install it.
+And RRDTool::Rawish has less dependencies and it is easy to install it.
 
 =head1 METHODS
 
 =over 4
 
-=item my $rrd = RRD::Rawish->new([%args|\%args])
+=item my $rrd = RRDTool::Rawish->new([%args|\%args])
 
-Creates a new instance of RRD::Rawish.
+Creates a new instance of RRDTool::Rawish.
 
 =item $rrd->create($params, [\%opts])
 Returns exit status

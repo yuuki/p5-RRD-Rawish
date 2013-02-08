@@ -1,4 +1,4 @@
-package RRD::Rawish::Test;
+package RRDTool::Rawish::Test;
 use utf8;
 use strict;
 use warnings;
@@ -6,11 +6,11 @@ use warnings;
 use base 'Exporter';
 our @EXPORT_OK = qw(rrd_create rrd_setup);
 
-use RRD::Rawish;
+use RRDTool::Rawish;
 
 sub rrd_create {
     my ($rrd_file) = @_;
-    my $rrd = RRD::Rawish->new(+{
+    my $rrd = RRDTool::Rawish->new(+{
         rrdfile => $rrd_file,
     });
     my $params = [

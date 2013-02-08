@@ -6,14 +6,14 @@ use lib lib => 't/lib';
 use Test::More;
 use Test::Fatal;
 
-use RRD::Rawish;
-use RRD::Rawish::Test;
+use RRDTool::Rawish;
+use RRDTool::Rawish::Test;
 
 my $rrdtool_path = '/usr/local/bin/rrdtool';
 my $rrd_file     = './rrd_test.rrd';
 
 subtest no_rrdfile => sub {
-    my $rrd = RRD::Rawish->new(+{
+    my $rrd = RRDTool::Rawish->new(+{
             command => $rrdtool_path,
         });
     my $params = ['テスト'];
@@ -23,7 +23,7 @@ subtest no_rrdfile => sub {
 };
 
 subtest parameter_type_mismatch => sub {
-    my $rrd = RRD::Rawish->new(
+    my $rrd = RRDTool::Rawish->new(
         command => $rrdtool_path,
         rrdfile => $rrd_file,
     );
@@ -50,7 +50,7 @@ subtest parameter_type_mismatch => sub {
 };
 
 subtest rrdtool_syntax_error => sub {
-    my $rrd = RRD::Rawish->new(
+    my $rrd = RRDTool::Rawish->new(
         command => $rrdtool_path,
         rrdfile => $rrd_file,
     );

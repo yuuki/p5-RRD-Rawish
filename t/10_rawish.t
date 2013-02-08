@@ -8,8 +8,8 @@ use Test::Mock::ExternalCommand;
 
 use File::Which qw(which);
 
-use RRD::Rawish;
-use RRD::Rawish::Test qw(rrd_create rrd_setup);
+use RRDTool::Rawish;
+use RRDTool::Rawish::Test qw(rrd_create rrd_setup);
 
 my $rrdtool_path = '/usr/local/bin/rrdtool';
 my $rrd_file     = './rrd_test.rrd';
@@ -17,7 +17,7 @@ my $remote_host  = 'hogerrd.com:111111';
 
 subtest constructor => sub {
     {
-        my $rrd = RRD::Rawish->new(
+        my $rrd = RRDTool::Rawish->new(
             rrdtool_path => $rrdtool_path,
             rrdfile => $rrd_file,
             remote  => $remote_host,
@@ -31,7 +31,7 @@ subtest constructor => sub {
     }
 
     {
-        my $rrd = RRD::Rawish->new(+{
+        my $rrd = RRDTool::Rawish->new(+{
             rrdtool_path => $rrdtool_path,
             rrdfile => $rrd_file,
             remote  => $remote_host,
@@ -49,7 +49,7 @@ subtest create => sub {
     if (-f $rrd_file) {
         unlink $rrd_file;
     }
-    my $rrd = RRD::Rawish->new(+{
+    my $rrd = RRDTool::Rawish->new(+{
         rrdtool_path => $rrdtool_path,
         rrdfile => $rrd_file,
     });
@@ -277,7 +277,7 @@ TEXT
 };
 
 subtest daemon => sub {
-    my $rrd = RRD::Rawish->new(+{
+    my $rrd = RRDTool::Rawish->new(+{
             command => $rrdtool_path,
             rrdfile => $rrd_file,
             remote  => $remote_host,
