@@ -45,6 +45,15 @@ subtest constructor => sub {
     }
 };
 
+subtest version => sub {
+    unless (-x $rrdtool_path) {
+        plan skip_all => "rrdtool command required for testing rrdtool syntax error";
+    }
+    my $rrd = RRDTool::Rawish->new(rrdfile => $rrd_file);
+    my $version = $rrd->version;
+    like $version, qr/\d+\.\d+.\d+/;
+};
+
 subtest create => sub {
     my $rrd = rrd_stub_new(
         rrdtool_path => $rrdtool_path,
