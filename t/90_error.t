@@ -12,6 +12,15 @@ use RRDTool::Rawish::Test;
 my $rrdtool_path = '/usr/local/bin/rrdtool';
 my $rrd_file     = './rrd_test.rrd';
 
+subtest 'invalid rrdtool path' => sub {
+    like exception {
+        my $rrd = RRDTool::Rawish->new(
+            rrdtool_path => "./abcdefghijklmn",
+            rrdfile      => $rrd_file,
+        );
+    }, qr/^Cannot execute/;
+};
+
 subtest no_rrdfile => sub {
     my $rrd = RRDTool::Rawish->new(+{
             command => $rrdtool_path,
