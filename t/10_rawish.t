@@ -16,6 +16,10 @@ my $rrd_file     = './rrd_test.rrd';
 my $remote_host  = 'hogerrd.com:111111';
 
 subtest constructor => sub {
+    unless (-x $rrdtool_path) {
+        plan skip_all => "rrdtool command required for testing constructor";
+    }
+
     {
         my $rrd = RRDTool::Rawish->new(
             rrdtool_path => $rrdtool_path,
@@ -23,7 +27,7 @@ subtest constructor => sub {
             remote  => $remote_host,
         );
 
-        if (ok $rrd) {
+        if (isa_ok $rrd, "RRDTool::Rawish") {
             is $rrd->{command}, $rrdtool_path;
             is $rrd->{rrdfile}, $rrd_file;
             is $rrd->{remote},  $remote_host;
@@ -37,7 +41,7 @@ subtest constructor => sub {
             remote  => $remote_host,
         });
 
-        if (ok $rrd) {
+        if (isa_ok $rrd, "RRDTool::Rawish") {
             is $rrd->{command}, $rrdtool_path;
             is $rrd->{rrdfile}, $rrd_file;
             is $rrd->{remote},  $remote_host;
