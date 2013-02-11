@@ -27,6 +27,13 @@ sub new {
     }, $class;
 }
 
+sub version {
+    my $self = shift;
+    my ($ret, $exit_status) = $self->_readpipe($self->{command}, 'version');
+    $ret =~ /^RRDtool (\d+\.\d+.\d+)/;
+    return $1;
+}
+
 sub errstr { $_[0]->{rrderror} }
 
 sub create {
