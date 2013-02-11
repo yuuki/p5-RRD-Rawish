@@ -7,13 +7,13 @@ use Test::More;
 use Test::Fatal;
 
 use RRDTool::Rawish;
-use RRDTool::Rawish::Test;
+use RRDTool::Rawish::Test qw(rrd_stub_new);
 
-my $rrdtool_path = '/usr/local/bin/rrdtool';
+my $rrdtool_path = $RRDTool::Rawish::Test::RRDTOOL_PATH;
 my $rrd_file     = './rrd_test.rrd';
 
 subtest sanitize => sub {
-    my $rrd = RRDTool::Rawish->new(
+    my $rrd = rrd_stub_new(
         command => $rrdtool_path,
         rrdfile => $rrd_file,
     );
