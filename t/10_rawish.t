@@ -9,19 +9,15 @@ use Test::Mock::ExternalCommand;
 use File::Which qw(which);
 
 use RRDTool::Rawish;
-use RRDTool::Rawish::Test qw(rrd_create rrd_setup);
+use RRDTool::Rawish::Test qw(rrd_stub_new);
 
-my $rrdtool_path = '/usr/local/bin/rrdtool';
+my $rrdtool_path = $RRDTool::Rawish::Test::RRDTOOL_PATH;
 my $rrd_file     = './rrd_test.rrd';
 my $remote_host  = 'hogerrd.com:111111';
 
 subtest constructor => sub {
-    unless (-x $rrdtool_path) {
-        plan skip_all => "rrdtool command required for testing constructor";
-    }
-
     {
-        my $rrd = RRDTool::Rawish->new(
+        my $rrd = rrd_stub_new(
             rrdtool_path => $rrdtool_path,
             rrdfile => $rrd_file,
             remote  => $remote_host,
@@ -35,7 +31,7 @@ subtest constructor => sub {
     }
 
     {
-        my $rrd = RRDTool::Rawish->new(+{
+        my $rrd = rrd_stub_new(+{
             rrdtool_path => $rrdtool_path,
             rrdfile => $rrd_file,
             remote  => $remote_host,
@@ -50,13 +46,10 @@ subtest constructor => sub {
 };
 
 subtest create => sub {
-    if (-f $rrd_file) {
-        unlink $rrd_file;
-    }
-    my $rrd = RRDTool::Rawish->new(+{
+    my $rrd = rrd_stub_new(
         rrdtool_path => $rrdtool_path,
         rrdfile => $rrd_file,
-    });
+    );
     my $params = [
         "DS:rx:DERIVE:40:0:U",
         "DS:tx:DERIVE:40:0:U",
@@ -68,35 +61,35 @@ subtest create => sub {
         '--no-overwrite' => '1',
     };
 
-    my $ret = $rrd->create($params, $opts);
-
-    is $ret, 0;
-    if (ok -f $rrd_file) {
-        unlink $rrd_file;
-    }
+    my $cmd = "create $rrd_file --no-overwrite --start 1350294469 --step 20 " . join(" ", @$params);
+    my $mock = Test::Mock::ExternalCommand->new;
+    $mock->set_command_by_coderef($rrdtool_path, sub { is join(" ", @_), $cmd });
+    $rrd->create($params, $opts);
 };
 
 subtest update => sub {
-    my $rrd = rrd_create($rrd_file);
-    my $cmd = "update $rrd_file --template dsname 1350294020:0:0 1350294040:50:100";
-    my $mock = Test::Mock::ExternalCommand->new;
-    $mock->set_command_by_coderef($rrdtool_path, sub { is join(" ", @_), $cmd });
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
     my $params = [
         "1350294020:0:0",
         "1350294040:50:100",
     ];
-    $rrd->update($params, +{
-        '--template' => "dsname",
-    });
-    unlink $rrd_file;
+
+    my $cmd = "update $rrd_file --template dsname " . join(" ", @$params);
+    my $mock = Test::Mock::ExternalCommand->new;
+    $mock->set_command_by_coderef($rrdtool_path, sub { is join(" ", @_), $cmd });
+
+    $rrd->update($params, +{ '--template' => "dsname" });
 };
 
 subtest graph => sub {
-    my $rrd = rrd_setup($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
     my $cmd = "graph --end now --imgformat PNG --start end-1y DEF:rx=$rrd_file:rx:LAST DEF:tx=$rrd_file:tx:LAST LINE1:rx#00F000 LINE1:tx#0000F0";
 
     my $mock = Test::Mock::ExternalCommand->new;
-    $mock->set_command_by_coderef($rrdtool_path, sub { is(join(" ", @_), $cmd); return "aaa"; });
+    $mock->set_command_by_coderef($rrdtool_path, sub {
+        is join(" ", @_), $cmd;
+        return "";
+    });
 
     my $params = [
         "DEF:rx=$rrd_file:rx:LAST",
@@ -111,35 +104,29 @@ subtest graph => sub {
     };
 
     $rrd->graph($params, $opts);
-
-    unlink $rrd_file;
 };
 
 subtest dump => sub {
-    my $rrd = rrd_create($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
 
     my $cmd = "dump $rrd_file --no-header";
     my $mock = Test::Mock::ExternalCommand->new;
     $mock->set_command_by_coderef($rrdtool_path, sub { is(join(" ", @_), $cmd) });
     $rrd->dump(+{ '--no-header' => 1 });
-
-    unlink $rrd_file;
 };
 
 subtest restore => sub {
-    my $rrd = rrd_create($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
 
     my $xmlfile = "aaa.xml";
     my $cmd = "restore $xmlfile $rrd_file --range-check";
     my $mock = Test::Mock::ExternalCommand->new;
     $mock->set_command_by_coderef($rrdtool_path, sub { is(join(" ", @_), $cmd) });
     $rrd->restore($xmlfile, +{ '--range-check' => 1 });
-
-    unlink $rrd_file;
 };
 
 subtest lastupdate => sub {
-    my $rrd = rrd_create($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
 
     my $cmd = "lastupdate $rrd_file";
     my $output = <<'EOS';
@@ -151,15 +138,12 @@ EOS
 
     my $mock = Test::Mock::ExternalCommand->new;
     $mock->set_command($rrdtool_path, $output, 0);
-    my $result = $rrd->lastupdate;
 
-    is $result, 1350294000;
-
-    unlink $rrd_file;
+    is $rrd->lastupdate, 1350294000;
 };
 
 subtest fetch => sub {
-    my $rrd = rrd_create($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
 
     my $output = <<'EOS';
                                  rx                  tx
@@ -188,12 +172,10 @@ EOS
     for (0..5) {
         like $lines->[$_], qr(^\d+: (\d+|nan|NaN) (\d+|nan|NaN)$);
     }
-
-    unlink $rrd_file;
 };
 
 subtest xport => sub {
-    my $rrd = rrd_create($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
 
     my $cmd = "xport DEF:rx=$rrd_file:output:LAST DEF:tx=$rrd_file:output:LAST XPORT:rx:out bytes";
     my $mock = Test::Mock::ExternalCommand->new;
@@ -204,12 +186,11 @@ subtest xport => sub {
         "XPORT:rx:out bytes",
     ];
     $rrd->xport($params);
-
-    unlink $rrd_file;
 };
 
 subtest info => sub {
-    my $rrd = rrd_create($rrd_file);
+    my $rrd = rrd_stub_new(rrdfile => $rrd_file);
+
     my $output = <<TEXT;
 filename = "rrd_test.rrd"
 rrd_version = "0003"
@@ -276,16 +257,14 @@ TEXT
     is $value->{rra}->[0]->{cdp_prep}->[0]->{unknown_datapoints}, 0;
     is $value->{rra}->[0]->{cdp_prep}->[1]->{value}, "NaN";
     is $value->{rra}->[0]->{cdp_prep}->[1]->{unknown_datapoints}, 0;
-
-    unlink $rrd_file;
 };
 
 subtest daemon => sub {
-    my $rrd = RRDTool::Rawish->new(+{
-            command => $rrdtool_path,
-            rrdfile => $rrd_file,
-            remote  => $remote_host,
-        });
+    my $rrd = rrd_stub_new(
+        command => $rrdtool_path,
+        rrdfile => $rrd_file,
+        remote  => $remote_host,
+    );
 
     subtest create => sub {
         my $params = [ "DS:rx:DERIVE:40:0:U" ];

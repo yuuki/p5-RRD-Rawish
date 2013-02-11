@@ -7,9 +7,9 @@ use Test::More;
 use Test::Fatal;
 
 use RRDTool::Rawish;
-use RRDTool::Rawish::Test;
+use RRDTool::Rawish::Test qw(rrd_stub_new);
 
-my $rrdtool_path = '/usr/local/bin/rrdtool';
+my $rrdtool_path = $RRDTool::Rawish::Test::RRDTOOL_PATH;
 my $rrd_file     = './rrd_test.rrd';
 
 subtest 'invalid rrdtool path' => sub {
@@ -22,9 +22,7 @@ subtest 'invalid rrdtool path' => sub {
 };
 
 subtest no_rrdfile => sub {
-    my $rrd = RRDTool::Rawish->new(+{
-            command => $rrdtool_path,
-        });
+    my $rrd = rrd_stub_new(command => $rrdtool_path);
     my $params = ['テスト'];
     for (qw(create update dump restore lastupdate fetch info)) {
         like exception { $rrd->$_($params) }, qr(Require rrdfile);
@@ -32,7 +30,7 @@ subtest no_rrdfile => sub {
 };
 
 subtest parameter_type_mismatch => sub {
-    my $rrd = RRDTool::Rawish->new(
+    my $rrd = rrd_stub_new(
         command => $rrdtool_path,
         rrdfile => $rrd_file,
     );
@@ -58,7 +56,11 @@ subtest parameter_type_mismatch => sub {
     }
 };
 
-subtest rrdtool_syntax_error => sub {
+subtest 'rrdtool syntax error' => sub {
+    unless (-x $rrdtool_path) {
+        plan skip_all => "rrdtool command required for testing rrdtool syntax error";
+    }
+
     my $rrd = RRDTool::Rawish->new(
         command => $rrdtool_path,
         rrdfile => $rrd_file,
