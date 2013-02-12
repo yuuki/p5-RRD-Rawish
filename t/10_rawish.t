@@ -51,7 +51,7 @@ subtest version => sub {
     }
     my $rrd = RRDTool::Rawish->new(rrdfile => $rrd_file);
     my $version = $rrd->version;
-    like $version, qr/\d+\.\d+.\d+/;
+    like $version, qr/\d+\.\d+/;
 };
 
 subtest create => sub {

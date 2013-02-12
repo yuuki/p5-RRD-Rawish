@@ -7,7 +7,7 @@ use Carp ();
 use Capture::Tiny qw(capture);
 use File::Which ();
 
-our $VERSION = '0.021';
+our $VERSION = '0.03';
 
 sub new {
     my ($class, @args) = @_;
@@ -30,8 +30,8 @@ sub new {
 sub version {
     my $self = shift;
     my ($ret, $exit_status) = $self->_readpipe($self->{command}, 'version');
-    $ret =~ /^RRDtool (\d+\.\d+.\d+)/;
-    return $1;
+    $ret =~ /^RRDtool (\d+)\.(\d+).(\d+)/;
+    return "$1.$2$3";  # like "1.47"
 }
 
 sub errstr { $_[0]->{rrderror} }
@@ -258,6 +258,14 @@ In contrast, RRDTool::Rawish has less dependencies and it's easy to install it.
 =item my $rrd = RRDTool::Rawish->new([%args])
 
 Creates a new instance of RRDTool::Rawish.
+
+=item $rrd->version()
+
+Returns rrdtool's version like "1.47".
+
+=item $rrd->errstr()
+
+Returns rrdtool's stderr string. If no error occurs, it returns empty string.
 
 =item $rrd->create($params, [\%opts])
 Returns exit status
