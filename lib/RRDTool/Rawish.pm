@@ -7,7 +7,7 @@ use Carp ();
 use Capture::Tiny qw(capture);
 use File::Which ();
 
-our $VERSION = '0.021';
+our $VERSION = '0.03';
 
 sub new {
     my ($class, @args) = @_;
