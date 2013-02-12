@@ -259,6 +259,14 @@ In contrast, RRDTool::Rawish has less dependencies and it's easy to install it.
 
 Creates a new instance of RRDTool::Rawish.
 
+=item $rrd->version()
+
+Returns rrdtool's version like "1.47".
+
+=item $rrd->errstr()
+
+Returns rrdtool's stderr string. If no error occurs, it returns empty string.
+
 =item $rrd->create($params, [\%opts])
 Returns exit status
 
