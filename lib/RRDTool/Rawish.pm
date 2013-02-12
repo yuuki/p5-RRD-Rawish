@@ -30,8 +30,8 @@ sub new {
 sub version {
     my $self = shift;
     my ($ret, $exit_status) = $self->_readpipe($self->{command}, 'version');
-    $ret =~ /^RRDtool (\d+\.\d+.\d+)/;
-    return $1;
+    $ret =~ /^RRDtool (\d+)\.(\d+).(\d+)/;
+    return "$1.$2$3";  # like "1.47"
 }
 
 sub errstr { $_[0]->{rrderror} }
