@@ -7,7 +7,7 @@ use Carp ();
 use Capture::Tiny qw(capture);
 use File::Which ();
 
-our $VERSION = '0.03';
+our $VERSION = '0.031';
 
 sub new {
     my ($class, @args) = @_;
@@ -356,6 +356,7 @@ Yuuki Tsubouchi  C<< <yuuki@cpan.org> >>
 Shoichi Masuhara
 
 =head1 SEE ALSO
+
 L<RRDtool Documetation|http://oss.oetiker.ch/rrdtool/>
 
 =head1 LICENCE AND COPYRIGHT

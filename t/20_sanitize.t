@@ -13,6 +13,9 @@ my $rrdtool_path = $RRDTool::Rawish::Test::RRDTOOL_PATH;
 my $rrd_file     = './rrd_test.rrd';
 
 subtest sanitize => sub {
+    unless (-x $rrdtool_path) {
+        plan skip_all => "rrdtool command required for testing rrdtool syntax error";
+    }
     my $rrd = rrd_stub_new(
         command => $rrdtool_path,
         rrdfile => $rrd_file,
