@@ -26,7 +26,7 @@ RRDTool::Rawish - A RRDtool command wrapper with rawish interface
         "1350294140:270:400"
     ]);
 
-    my $img = $rrd->graph([
+    my $img = $rrd->graph('-', [
         "DEF:rx=rrdtest2.rrd:rx:LAST",
         "DEF:tx=rrdtest2.rrd:tx:LAST",
         "LINE1:rx:rx#00F000",
@@ -68,7 +68,7 @@ Returns exit status
 
     rrdtool update
 
-- $rrd->graph($params, \[\\%opts\])
+- $rrd->graph($filename, $params, \[\\%opts\])
 Returns exit status
 
     rrdtool graph
