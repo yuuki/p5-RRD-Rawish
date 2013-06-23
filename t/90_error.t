@@ -23,7 +23,7 @@ subtest 'invalid rrdtool path' => sub {
 
 subtest no_rrdfile => sub {
     my $rrd = rrd_stub_new(command => $rrdtool_path);
-    my $params = ['テスト'];
+    my $params = ['foo'];
     for (qw(create update dump restore lastupdate fetch info)) {
         like exception { $rrd->$_($params) }, qr(Require rrdfile);
     }
@@ -37,21 +37,25 @@ subtest parameter_type_mismatch => sub {
 
     my ($params, $opts);
     subtest invalid_param_type => sub {
-        for (qw(create update graph xport)) {
-            $params = 'Arrayじゃない';
+        for (qw(create update xport)) {
+            $params = 'not array';
             like exception { $rrd->$_($params) }, qr(Not ARRAY);
         }
-        for (qw(create update graph dump xport)) {
+        for (qw(create update dump xport)) {
             $params = [1, 2];
-            $opts = 'Hashじゃない';
+            $opts = 'not hash';
             like exception { $rrd->$_($params, $opts) }, qr(Not HASH);
         }
         for (qw(fetch restore)) {
             like exception { $rrd->$_() }, qr(Require);
 
-            my $param = "スカラー";
-            $opts = 'Hashじゃない';
+            my $param = "scalar";
+            $opts = 'not hash';
             like exception { $rrd->$_($param, $opts) }, qr(Not HASH);
+        }
+
+        { # graph
+            like exception { $rrd->graph() }, qr(Require filename);
         }
     }
 };
@@ -66,7 +70,7 @@ subtest 'rrdtool syntax error' => sub {
         rrdfile => $rrd_file,
     );
 
-    for (qw(create update graph xport)) {
+    for (qw(create update xport)) {
         $rrd->$_([], {'--invalid' => 'aaa' });
         like $rrd->errstr, qr/^ERROR:/;
     }

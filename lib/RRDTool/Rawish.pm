@@ -61,13 +61,14 @@ sub update {
 }
 
 sub graph {
-    my ($self, $params, $opts) = @_;
+    my ($self, $filename, $params, $opts) = @_;
+    Carp::croak 'Require filename' unless $filename;
     Carp::croak 'Not ARRAY reference: $params' if ref($params) ne 'ARRAY';
     Carp::croak 'Not HASH reference: $opts'    if defined $opts && ref($opts) ne 'HASH';
 
     $opts->{'--daemon'} = $self->{remote} if $self->{remote};
 
-    my ($img, $exit_status) = $self->_readpipe($self->{command}, 'graph', _opt_array($opts), @$params);
+    my ($img, $exit_status) = $self->_readpipe($self->{command}, 'graph', $filename, _opt_array($opts), @$params);
     return $img;
 }
 
@@ -233,7 +234,7 @@ RRDTool::Rawish - A RRDtool command wrapper with rawish interface
         "1350294140:270:400"
     ]);
 
-    my $img = $rrd->graph([
+    my $img = $rrd->graph('-', [
         "DEF:rx=rrdtest2.rrd:rx:LAST",
         "DEF:tx=rrdtest2.rrd:tx:LAST",
         "LINE1:rx:rx#00F000",
@@ -277,7 +278,7 @@ Returns exit status
 
 rrdtool update
 
-=item $rrd->graph($params, [\%opts])
+=item $rrd->graph($filename, $params, [\%opts])
 Returns exit status
 
 rrdtool graph

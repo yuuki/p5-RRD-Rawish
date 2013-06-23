@@ -92,7 +92,7 @@ subtest update => sub {
 
 subtest graph => sub {
     my $rrd = rrd_stub_new(rrdfile => $rrd_file);
-    my $cmd = "graph --end now --imgformat PNG --start end-1y DEF:rx=$rrd_file:rx:LAST DEF:tx=$rrd_file:tx:LAST LINE1:rx#00F000 LINE1:tx#0000F0";
+    my $cmd = "graph - --end now --imgformat PNG --start end-1y DEF:rx=$rrd_file:rx:LAST DEF:tx=$rrd_file:tx:LAST LINE1:rx#00F000 LINE1:tx#0000F0";
 
     my $mock = Test::Mock::ExternalCommand->new;
     $mock->set_command_by_coderef($rrdtool_path, sub {
@@ -112,7 +112,7 @@ subtest graph => sub {
         '--start'     => 'end-1y',
     };
 
-    $rrd->graph($params, $opts);
+    $rrd->graph('-', $params, $opts);
 };
 
 subtest dump => sub {
