@@ -215,8 +215,9 @@ RRDTool::Rawish - A RRDtool command wrapper with rawish interface
     use RRDTool::Rawish;
 
     my $rrd = RRDTool::Rawish->new(
-        rrdfile => 'rrdtest.rrd',           # option
-        remote  => 'rrdtest.com:11111',  # option for rrdcached
+        rrdfile      => 'rrdtest.rrd',              # path to rrdfile
+        remote       => 'rrdtest.com:11111',        # option for rrdcached
+        rrdtool_path => '/opt/rrdtool/bin/rrdtool', # option path to rrdtool
     );
     my $exit_status = $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
         '--start'        => '1350294000',
@@ -258,7 +259,34 @@ In contrast, RRDTool::Rawish has less dependencies and it's easy to install it.
 
 =item my $rrd = RRDTool::Rawish->new([%args])
 
-Creates a new instance of RRDTool::Rawish.
+Creates a new instance of RRDTool::Rawish. %args need to be specified in key => value format.
+The following options are supported:
+
+=over 4
+
+=item rrdfile
+
+This option specifies the rrdfile that L<RRD::Rawish> is working on. It's
+mandatory for most of the rrdtool operations.
+
+=item rrdtool_path
+
+This is the path to the rrdtool binary that should be used. RRD::Rawish will
+use the rrdtool binary that's in the user path. You can override this behavior
+to use a different rrdtool binary. This allows multiple rrdtools to be
+installed, it also simplifies the usage of a binary that's not in the default
+path.
+
+=item remote
+
+This is option to support the rrdcached daemon. You can specifiy a unix file or
+network socket. Unix file sockets need to be prefixed with C<unix:>
+e.g. C<unix:/var/run/rrdcached.sock>. As L<RRD::Rawish> uses the rrdtool
+binary itself the environment variable C<RRDCACHED_ADDRESS> is well respected.
+Setting the environment variable allows transparent integration.
+
+=back
+
 
 =item $rrd->version()
 
@@ -282,6 +310,7 @@ rrdtool update
 Returns exit status
 
 rrdtool graph
+
 Returns image binary.
 
 =item $rrd->dump([\%opts])
@@ -358,7 +387,7 @@ Shoichi Masuhara
 
 =head1 SEE ALSO
 
-L<RRDtool Documetation|http://oss.oetiker.ch/rrdtool/>
+L<RRDtool Documentation|http://oss.oetiker.ch/rrdtool/>
 
 =head1 LICENCE AND COPYRIGHT
 
