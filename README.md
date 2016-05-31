@@ -7,16 +7,17 @@ RRDTool::Rawish - A RRDtool command wrapper with rawish interface
     use RRDTool::Rawish;
 
     my $rrd = RRDTool::Rawish->new(
-        rrdfile => 'rrdtest.rrd',           # option
-        remote  => 'rrdtest.com:11111',  # option for rrdcached
+        rrdfile      => 'rrdtest.rrd',              # path to rrdfile
+        remote       => 'rrdtest.com:11111',        # option for rrdcached
+        rrdtool_path => '/opt/rrdtool/bin/rrdtool', # option path to rrdtool
     );
-    my $exit_status = $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
+    my $create_status = $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
         '--start'        => '1350294000',
         '--step'         => '20',
         '--no-overwrite' => '1',
     });
 
-    my $exit_status = $rrd->update([
+    my $update_status = $rrd->update([
         "1350294020:0:0",
         "1350294040:50:100",
         "1350294060:80:150",
@@ -48,7 +49,29 @@ In contrast, RRDTool::Rawish has less dependencies and it's easy to install it.
 
 - my $rrd = RRDTool::Rawish->new(\[%args\])
 
-    Creates a new instance of RRDTool::Rawish.
+    Creates a new instance of RRDTool::Rawish. %args need to be specified in key => value format.
+    The following options are supported:
+
+    - rrdfile
+
+        This option specifies the rrdfile that [RRD::Rawish](https://metacpan.org/pod/RRD::Rawish) is working on. It's
+        mandatory for most of the rrdtool operations.
+
+    - rrdtool\_path
+
+        This is the path to the rrdtool binary that should be used. RRD::Rawish will
+        use the rrdtool binary that's in the user path. You can override this behavior
+        to use a different rrdtool binary. This allows multiple rrdtools to be
+        installed, it also simplifies the usage of a binary that's not in the default
+        path.
+
+    - remote
+
+        This is option to support the rrdcached daemon. You can specifiy a unix file or
+        network socket. Unix file sockets need to be prefixed with `unix:`
+        e.g. `unix:/var/run/rrdcached.sock`. As [RRD::Rawish](https://metacpan.org/pod/RRD::Rawish) uses the rrdtool
+        binary itself the environment variable `RRDCACHED_ADDRESS` is well respected.
+        Setting the environment variable allows transparent integration.
 
 - $rrd->version()
 
@@ -59,12 +82,14 @@ In contrast, RRDTool::Rawish has less dependencies and it's easy to install it.
     Returns rrdtool's stderr string. If no error occurs, it returns empty string.
 
 - $rrd->create($params, \[\\%opts\])
-Returns exit status
+
+    Returns exit status.
 
     rrdtool create
 
 - $rrd->update($params, \[\\%opts\])
-Returns exit status
+
+    Returns exit status.
 
     rrdtool update
 
@@ -72,37 +97,51 @@ Returns exit status
 Returns exit status
 
     rrdtool graph
+
     Returns image binary.
 
 - $rrd->dump(\[\\%opts\])
 
     rrdtool dump
+
     Returns xml data.
 
 - $rrd->restore($xmlfile, \[\\%opts\])
 
     rrdtool restore
-    Returns exit status
+
+    Returns exit status.
 
 - $rrd->lastupdate
 
     rrdtool lastupdate
-    Returns timestamp
+
+    Returns timestamp.
 
 - $rrd->fetch
 
     rrdtool fetch
-    Returns output lines as an ARRAY refarence
+    Returns output lines as an ARRAY reference
 
 - $rrd->xport
 
     rrdtool xport
-    Returns xml data
+
+    Returns xml data.
+
+- $rrd->flushcached
+
+    rrdtool flushcached
+
+    Sends a `flush` command to rrdcached for the `rrdfile`.
+
+    Returns exit status.
 
 - $rrd->info
 
     rrdtool info
-    Returns info as a HASH refarence
+
+    Returns info as a HASH reference.
 
     Examples:
 
@@ -146,11 +185,11 @@ Shoichi Masuhara
 
 # SEE ALSO
 
-[RRDtool Documetation](http://oss.oetiker.ch/rrdtool/)
+[RRDtool Documentation](http://oss.oetiker.ch/rrdtool/)
 
 # LICENCE AND COPYRIGHT
 
 Copyright (c) 2013, Yuuki Tsubouchi `<yuuki@cpan.org>`. All rights reserved.
 
 This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See [perlartistic](http://search.cpan.org/perldoc?perlartistic).
+modify it under the same terms as Perl itself. See [perlartistic](https://metacpan.org/pod/perlartistic).

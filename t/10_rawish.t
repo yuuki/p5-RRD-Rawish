@@ -282,6 +282,13 @@ subtest daemon => sub {
         $mock->set_command_by_coderef($rrdtool_path, sub { is join(" ", @_), $cmd });
         $rrd->create($params);
     };
+
+    subtest flushcached => sub {
+        my $cmd = "flushcached --daemon $remote_host $rrd_file";
+        my $mock = Test::Mock::ExternalCommand->new;
+        $mock->set_command_by_coderef($rrdtool_path, sub { is join(" ", @_), $cmd });
+        $rrd->flushcached;
+    };
 };
 
 
