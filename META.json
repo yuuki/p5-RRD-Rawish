@@ -68,7 +68,7 @@
          "web" : "https://github.com/yuuki/p5-RRD-Rawish"
       }
    },
-   "version" : "0.032",
+   "version" : "0.040",
    "x_authority" : "cpan:YUUKI",
    "x_contributors" : [
       "Ulrich Habel <rhaen@pkgbox.de>",

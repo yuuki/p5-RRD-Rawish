@@ -1,5 +1,10 @@
 Revision history for Perl extension RRDTool::Rawish
 
+{{$NEXT}}
+
+0.040 2016-06-11T13:19:00Z
+    - Added feature flushcached for rrdcached #2 (by rhaen)
+
 0.032 2013-06-23T13:16:00Z
     - Fix failure test.
 
