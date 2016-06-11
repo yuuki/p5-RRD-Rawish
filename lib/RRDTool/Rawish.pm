@@ -164,6 +164,17 @@ sub info {
     return $value;
 }
 
+sub flushcached {
+    my ($self, $opts) = @_;
+    Carp::croak 'Require rrdfile' if not defined $self->{rrdfile};
+    Carp::croak 'Require remote'  if not defined $self->{remote};
+    $opts->{'--daemon'} = $self->{remote} if $self->{remote};
+
+    my $exit_status = $self->_system($self->{command}, 'flushcached', _opt_array($opts), $self->{rrdfile});
+    return $exit_status;
+}
+
+
 sub _system {
     my ($self, @expr) = @_;
 
@@ -219,13 +230,13 @@ RRDTool::Rawish - A RRDtool command wrapper with rawish interface
         remote       => 'rrdtest.com:11111',        # option for rrdcached
         rrdtool_path => '/opt/rrdtool/bin/rrdtool', # option path to rrdtool
     );
-    my $exit_status = $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
+    my $create_status = $rrd->create(["DS:rx:DERIVE:40:0:U", "DS:tx:DERIVE:40:0:U", "RRA:LAST:0.5:1:240"], {
         '--start'        => '1350294000',
         '--step'         => '20',
         '--no-overwrite' => '1',
     });
 
-    my $exit_status = $rrd->update([
+    my $update_status = $rrd->update([
         "1350294020:0:0",
         "1350294040:50:100",
         "1350294060:80:150",
@@ -297,12 +308,14 @@ Returns rrdtool's version like "1.47".
 Returns rrdtool's stderr string. If no error occurs, it returns empty string.
 
 =item $rrd->create($params, [\%opts])
-Returns exit status
+
+Returns exit status.
 
 rrdtool create
 
 =item $rrd->update($params, [\%opts])
-Returns exit status
+
+Returns exit status.
 
 rrdtool update
 
@@ -316,32 +329,45 @@ Returns image binary.
 =item $rrd->dump([\%opts])
 
 rrdtool dump
+
 Returns xml data.
 
 =item $rrd->restore($xmlfile, [\%opts])
 
 rrdtool restore
-Returns exit status
+
+Returns exit status.
 
 =item $rrd->lastupdate
 
 rrdtool lastupdate
-Returns timestamp
+
+Returns timestamp.
 
 =item $rrd->fetch
 
 rrdtool fetch
-Returns output lines as an ARRAY refarence
+Returns output lines as an ARRAY reference
 
 =item $rrd->xport
 
 rrdtool xport
-Returns xml data
+
+Returns xml data.
+
+=item $rrd->flushcached
+
+rrdtool flushcached
+
+Sends a C<flush> command to rrdcached for the C<rrdfile>.
+
+Returns exit status.
 
 =item $rrd->info
 
 rrdtool info
-Returns info as a HASH refarence
+
+Returns info as a HASH reference.
 
 Examples:
 
